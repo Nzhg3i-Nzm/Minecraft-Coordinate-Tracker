@@ -23,10 +23,17 @@ function loadWorlds(){
             let div = document.createElement("div");
             div.setAttribute("class", "worldDiv");
             div.setAttribute("id", world);
-            let p = document.createElement("p");
-            p.innerHTML = world;
-            p.setAttribute("onclick", "openClose(\""+world+"\")");
-            div.appendChild(p);
+            let head = document.createElement("h2");
+            head.innerHTML = world;
+            head.setAttribute("class", "worldHead");
+            head.setAttribute("onclick", "openClose(\""+world+"\")");
+            let x = document.createElement("img");
+            x.setAttribute("src", "x.png");
+            x.setAttribute("class", "headx");
+            x.setAttribute("onclick", "removeItem(\"world\", \""+world+"\")");
+
+            div.appendChild(head);
+            div.appendChild(x);
 
             document.getElementById("worldlist").appendChild(div);
         }
@@ -45,11 +52,20 @@ function dropdown(name){
     for (realm in data){
         let realmdiv = document.createElement("div");
         realmdiv.setAttribute("id", realm);
+        let count = 0;
         for (coordset in data[realm]){
             let coordText = document.createElement("p");
             coordText.innerHTML = data[realm][coordset].toString().replaceAll(",", ", ");
-            
+            coordText.setAttribute("class", "coordText");
+
+            let x = document.createElement("img");
+            x.setAttribute("src", "x.png");
+            x.setAttribute("class", "coordx");
+            x.setAttribute("onclick", "removeItem(\"coordinate\", \""+name+"\", \""+realm+"\", "+count+")");
+
             realmdiv.appendChild(coordText);
+            realmdiv.appendChild(x);
+            count++;
         }
         div.appendChild(realmdiv);
     }
@@ -147,7 +163,7 @@ function addCoords(name){
         newdata.push( [com, x, y, z] );
     }
 
-    localStorage[name] = JSON.stringify(data);
+    localStorage.setItem(name, JSON.stringify(data));
 
     //clear input boxes
     document.getElementById("comment").value = "";
@@ -175,5 +191,35 @@ function openClose(name){
     else{
         exists.remove();
         openWorld = ""
+    }
+}
+
+function remove(array, index){
+    //remove item from array by index
+        array.splice(index, 1); // 2nd parameter means remove one item only
+    return array;
+}
+
+function removeItem(type, world, realm=null, itemloc=null){
+    if (type == "world"){
+        let conf = confirm("Are you sure you want to delete the world \""+world+"\" ?");
+        if (conf == true){
+            localStorage.removeItem(world);
+            
+            location.reload();
+        }
+    }
+    else if (type == "coordinate"){
+        let conf = confirm("Are you sure you want to delete the "+realm+" coordinate in position "+(itemloc+1)+" from world \""+world+"\" ?");
+        if (conf == true){
+            let storage = JSON.parse(localStorage.getItem(world));
+            let newdata = storage[realm];
+            newdata = remove(newdata, itemloc);
+            storage[realm] = newdata;
+            
+            localStorage.setItem(world, JSON.stringify(storage));
+
+            location.reload();
+        }
     }
 }
