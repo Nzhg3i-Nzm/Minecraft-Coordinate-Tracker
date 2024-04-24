@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Minecraft Coords Tracker</title>
+        <script src="home.js"></script>
+        <link rel="stylesheet" href="home.css">
+    </head>
+    <body>
+        <center>
+            <div id="banner">
+                <h1>Minecraft Coordinate Tracker</h1>
+            </div>
+            <div id="main">
+                <div id="newWorldForm">
+                    <p style="display: inline-block">Add New World</p>
+                    <input type="text" id="newWorldName">
+                    <button onClick="addWorld()">Submit</button>
+                </div>
+                <div id="worldlist">
+                </div>
+            </div>
+        </center>
+        <script>loadWorlds()</script>
+    </body>
+</html>

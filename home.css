@@ -1,0 +1,16 @@
+#newWorldForm{
+    display: block;
+}
+.worldDiv{
+    border: solid black;
+    border-width: 2px;
+}
+#Overworld{
+    background-color: #5e9d34;
+}
+#Nether{
+    background-color: #ac2020;
+}
+#End{
+    background-color: #5e2987;
+}
