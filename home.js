@@ -196,7 +196,7 @@ function openClose(name){
 
 function remove(array, index){
     //remove item from array by index
-        array.splice(index, 1); // 2nd parameter means remove one item only
+    array.splice(index, 1); // 2nd parameter means remove one item only
     return array;
 }
 
