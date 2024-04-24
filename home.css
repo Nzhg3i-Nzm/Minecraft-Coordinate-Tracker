@@ -14,3 +14,19 @@
 #End{
     background-color: #5e2987;
 }
+.worldHead{
+}
+.coordText{
+}
+.headx{
+    float: right;
+    width: 2.5%;
+    height: 2.5%;
+    margin-top: -40px;
+}
+.coordx{
+    float: right;
+    width: 2.5%;
+    height: 2.5%;
+    margin-top: -35px;
+}
