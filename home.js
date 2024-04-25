@@ -175,43 +175,99 @@ function dropdown(name){
 }
 
 function addCoords(name){
-    let com = document.getElementById("comment").value;
-    let x = parseInt(document.getElementById("X").value);
-    let y = parseInt(document.getElementById("Y").value);
-    let z = parseInt(document.getElementById("Z").value);
+    let isValid = checkValues();
+    if (isValid == true){
+        let com = document.getElementById("comment").value;
+        let x = parseInt(document.getElementById("X").value);
+        let y = parseInt(document.getElementById("Y").value);
+        let z = parseInt(document.getElementById("Z").value);
+
+        let ow = document.getElementById("owcheck").checked;
+        let nether = document.getElementById("nethercheck").checked;
+        let end = document.getElementById("endcheck").checked;
+
+        let data = JSON.parse(localStorage[name]);
+        let newdata = "";
+    
+        if (ow == true){
+            newdata = data["Overworld"];
+            newdata.push( [com, x, y, z] );
+        }
+        else if (nether == true){
+            newdata = data["Nether"]
+            newdata.push( [com, x, y, z] );
+        }
+        else{
+            newdata = data["End"]
+            newdata.push( [com, x, y, z] );
+        }
+
+        localStorage.setItem(name, JSON.stringify(data));
+
+        //clear input boxes
+        document.getElementById("comment").value = "";
+        document.getElementById("X").value = "";
+        document.getElementById("Y").value = "";
+        document.getElementById("Z").value = "";
+        document.getElementById("owcheck").checked = false;
+        document.getElementById("nethercheck").checked = false;
+        document.getElementById("endcheck").checked = false;
+
+        location.reload();
+    }
+}
+
+function checkValues(){
+    let x = document.getElementById("X").value;
+    let y = document.getElementById("Y").value;
+    let z = document.getElementById("Z").value;
 
     let ow = document.getElementById("owcheck").checked;
     let nether = document.getElementById("nethercheck").checked;
     let end = document.getElementById("endcheck").checked;
 
-    let data = JSON.parse(localStorage[name]);
-    let newdata = "";
-    
-    if (ow == true){
-        newdata = data["Overworld"];
-        newdata.push( [com, x, y, z] );
+    if (x == ""){
+        alert("Must provide X coordinate");
+        return false;
+    }
+    else if (y == ""){
+        alert("Must provide Y coordinate");
+        return false;
+    }
+    else if (z == ""){
+        alert("Must provide Z coordinate");
+        return false;
+    }
+    else if (ow == true){
+        if (nether == true){
+            alert("Please select only one realm");
+            return false;
+        }
+        else if (end == true){
+            alert("Please select only one realm");
+            return false;
+        }
+        else{
+            return true;
+        }
     }
     else if (nether == true){
-        newdata = data["Nether"]
-        newdata.push( [com, x, y, z] );
+        if (end == true){
+            alert("Please select only one realm");
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    else if ((ow == false) && (nether == false) && (end == false)){
+        alert("Please choose a realm");
+        return false;
     }
     else{
-        newdata = data["End"]
-        newdata.push( [com, x, y, z] );
+        return true;
     }
-
-    localStorage.setItem(name, JSON.stringify(data));
-
-    //clear input boxes
-    document.getElementById("comment").value = "";
-    document.getElementById("X").value = "";
-    document.getElementById("Y").value = "";
-    document.getElementById("Z").value = "";
-    document.getElementById("owcheck").checked = false;
-    document.getElementById("nethercheck").checked = false;
-    document.getElementById("endcheck").checked = false;
-
-    location.reload();
+    
 }
 
 openWorld = "";
