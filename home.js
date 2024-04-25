@@ -49,6 +49,11 @@ function dropdown(name){
     let div = document.createElement("div");
     div.setAttribute("id", name+"-data");
 
+    let graphCoordArray = [];
+    let graphDescArray = [];
+    let smallest = [-150, -150];
+    let largest = [150, 150];
+    
     for (realm in data){
         let realmdiv = document.createElement("div");
         realmdiv.setAttribute("id", realm);
@@ -57,6 +62,25 @@ function dropdown(name){
             let coordText = document.createElement("p");
             coordText.innerHTML = data[realm][coordset].toString().replaceAll(",", ", ");
             coordText.setAttribute("class", "coordText");
+
+            let X = data[realm][coordset][1];
+            let Z = data[realm][coordset][3];
+            
+            graphCoordArray.push( [X, Z] );
+            graphDescArray.push( data[realm][coordset][0] );
+
+            if (X<smallest[0]){
+                smallest[0] = X;
+            }
+            if (X>largest[0]){
+                largest[0] = X;
+            }
+            if (Z<smallest[1]){
+                smallest[1] = Z;
+            }
+            if (Z>largest[1]){
+                largest[1] = Z;
+            }
 
             let x = document.createElement("img");
             x.setAttribute("src", "x.png");
@@ -68,8 +92,21 @@ function dropdown(name){
             count++;
         }
         div.appendChild(realmdiv);
-    }
+        
+        let graphButton = document.createElement("button");
+        if (data[realm].length != 0){
+            graphButton.innerHTML = "Show Graph";
+            graphButton.setAttribute("onclick", "OCgraph(\""+name+"-"+realm+"\", \""+name+"\", \""+JSON.stringify(graphCoordArray)+"\", \""+JSON.stringify(graphDescArray).replaceAll("\"", "\\\"")+"\", \""+JSON.stringify(smallest)+"\", \""+JSON.stringify(largest)+"\");");
+            
+            div.appendChild(graphButton);
+        }
 
+        graphCoordArray = [];
+        graphDescArray = [];
+        smallest = [-150, -150];
+        largest = [150, 150];
+    }
+    
     let newCoordForm = document.createElement("div");
     let newCoordComText = document.createElement("p");
     newCoordComText.innerHTML = "Enter coord description";
@@ -190,13 +227,14 @@ function openClose(name){
     }
     else{
         exists.remove();
-        openWorld = ""
+        openWorld = "";
+        openGraph = "";
     }
 }
 
 function remove(array, index){
     //remove item from array by index
-    array.splice(index, 1); // 2nd parameter means remove one item only
+        array.splice(index, 1); // 2nd parameter means remove one item only
     return array;
 }
 
@@ -221,5 +259,93 @@ function removeItem(type, world, realm=null, itemloc=null){
 
             location.reload();
         }
+    }
+}
+
+function makeGraph(world, coordArray, descArray, smallest, largest){
+    //will use X and Z because minecraft flipped Y and Z
+    //data recieved in coordArray will follow the pattern: [ [x, z], [x, z] ]
+    //descArray will be [desc, desc], smallest and largest are [X, Z]
+    coordArray = JSON.parse(coordArray);
+    descArray = JSON.parse(descArray);
+    smallest = JSON.parse(smallest);
+    largest = JSON.parse(largest);
+
+    let Xscale = (largest[0]-smallest[0]);
+    let Yscale = (largest[1]-smallest[1]);
+    let scale = 1;
+    if (Xscale>Yscale){
+        scale = Xscale;
+    }
+    else{
+        scale = Yscale;
+    }
+    
+    let canvasElem = document.createElement("canvas");
+    canvasElem.setAttribute("id", "canvas");
+    let parent = document.getElementById(world+"-data");
+    parent.appendChild(canvasElem);
+
+    function setup(){
+        const canvas = document.getElementById("canvas");
+        if (canvas.getContext) {
+            const ctx = canvas.getContext("2d");
+            //convert to cartesian graph
+            ctx.translate(canvas.width/2,canvas.height/2);
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, 150);
+            ctx.stroke();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(150, 0);
+            ctx.stroke();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-150, 0);
+            ctx.stroke();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -150);
+            ctx.stroke();
+        }
+    }
+    
+    function draw(){
+        const canvas = document.getElementById("canvas");
+        if (canvas.getContext) {
+            const ctx = canvas.getContext("2d");
+
+            for (coordset in coordArray){
+                let X = coordArray[coordset][0];
+                let Y = coordArray[coordset][1];
+                //scale x and y. For some reason y axis is smaller than x axis
+                X = X/scale*90;
+                Y = Y/scale*50;
+                //draw point
+                ctx.beginPath();
+                ctx.moveTo(X-2, Y+2);
+                ctx.lineTo(X+2, Y+2);
+                ctx.lineTo(X+2, Y-2);
+                ctx.lineTo(X-2, Y-2);
+                ctx.fill();
+                //create text to right of point
+                ctx.font = "10px serif";
+                ctx.fillText(descArray[coordset], X+6, Y+5);
+            }
+        }
+    }
+    setup();
+    draw();
+}
+
+openGraph = "";
+
+function OCgraph(name, world, coordArray, descArray, smallest, largest){
+    if (openGraph == ""){
+        openGraph = name;
+        makeGraph(world, coordArray, descArray, smallest, largest);
+    }
+    else{
+        document.getElementById("canvas").remove();
+        openGraph = "";
     }
 }
