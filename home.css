@@ -30,3 +30,9 @@
     height: 2.5%;
     margin-top: -35px;
 }
+#canvas{
+    width: 300px;
+    height: 300px;
+    border: solid black;
+    border-width: 2px;
+}
