@@ -375,7 +375,7 @@ function makeGraph(world, coordArray, descArray, smallest, largest){
                 let Y = coordArray[coordset][1];
                 //scale x and y. For some reason y axis is smaller than x axis
                 X = X/scale*90;
-                Y = Y/scale*50;
+                Y = Y/scale*-50;
                 //draw point
                 ctx.beginPath();
                 ctx.moveTo(X-2, Y+2);
